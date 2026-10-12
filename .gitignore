@@ -1,0 +1,11 @@
+# Local review artifacts and working files
+/tmp/
+*.zip
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+
+# Local hosting connection metadata
+**/.openai/
