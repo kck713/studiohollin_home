@@ -61,3 +61,23 @@
 - 173개 고유 프로젝트, 130개 미디어 실적 셀의 누락 여부와 로컬 링크 검증.
 - 브라우저에서 검색, 분야 필터, 더 보기 확인. 모바일 390px 검색 화면 확인.
 - 영상 URL이 제공되지 않은 항목은 소개서의 스틸 이미지와 프로젝트 정보로 구성했습니다.
+
+## 2026-10-13 이미지 교체
+
+- 메뉴 페이지 상단 이미지, EXPERTISE 섹션, ABOUT 이미지를 제공된 STAYC·SIGNAL·HEARTCREAM·TWO SIDES 스틸로 교체.
+- 홈 히어로의 작은 텍스트 라벨 제거.
+
+## 2026-10-26 이미지 최적화
+
+- 4K 원본 이미지를 2560px 폭 JPEG(품질 82)로 재압축. `stayc-pink`, `stayc-purple`은 투명 영역이 없어 PNG에서 JPG로 변환.
+- 사용하지 않는 `heartcream-room.jpg` 삭제.
+- 대형 이미지 합계 약 13.8MB → 0.9MB. WORK 첫 화면 이미지 4.7MB → 228KB.
+- 178개 HTML 로컬 참조 검사 통과. WORK·EXPERTISE·CONTACT 1440px·390px 화면 확인, 가로 넘침 및 콘솔 오류 없음.
+
+## 배포 (GitHub Pages)
+
+`gh-pages` 브랜치는 `hollin-renewal/dist`만 담은 배포용 브랜치입니다. `main`에 변경을 병합한 뒤 저장소 루트에서 다음을 실행해 갱신합니다.
+
+```
+git subtree push --prefix hollin-renewal/dist origin gh-pages
+```
