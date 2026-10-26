@@ -95,6 +95,7 @@ git subtree push --prefix hollin-renewal/dist origin gh-pages
 - 홈 SELECTED WORK를 ARTIST & PERFORMANCE 4개(STAYC, SIGNAL, HEARTCREAM, TWO SIDES)로 구성. 인물이 멀리 있거나 옆모습인 고화질 스틸을 대표 이미지로 사용하고, 홈 분야 필터는 제거.
   - 네 프로젝트의 기존 PDF 추출 이미지는 `projects.json`의 `archived_images`에 보관.
   - 홈 목록은 `projects.json`의 `"featured": 순서`로 정하며, `build-pages.py`가 `dist/app.js`를 갱신.
+- 홈 히어로를 사용자 제공 SIGNAL 고화질 원본(`signal-hero.jpg`, 1920px)으로 교체.
 - 대표 이미지가 없거나 가로 1280px 미만인 49개 프로젝트를 숨김(`"hidden": true`). 숨긴 프로젝트는 WORK 목록, 상세 페이지, NEXT PROJECT 연결에서 빠지고, 프로젝트가 없는 분야 필터(BRAND FILM)도 자동으로 사라짐.
 
 ### 숨긴 프로젝트 다시 보이기
