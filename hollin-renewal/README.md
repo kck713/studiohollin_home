@@ -89,3 +89,16 @@ git subtree push --prefix hollin-renewal/dist origin gh-pages
   - 2560px 이하 JPEG(품질 85)로 변환. 위아래 단색 여백(레터박스·흰 띠)은 잘라내고, 잘라낸 결과가 2.4:1보다 납작하면 사이트 배경색(#0b0b0b)으로 16:9에 맞춤.
 - `image-replacement-list.xlsx` 해상도·상태 갱신. 남은 교체 대상 59장(주로 BRAND & PRODUCT, ARTIST & PERFORMANCE와 대표 프로젝트 갤러리).
 - 178개 HTML 로컬 참조 검사 통과. WORK(LIVE·EVENT 필터), 상세, 홈, 390px 모바일 확인. 콘솔·요청 오류 없음.
+
+## 2026-10-26 홈 SELECTED WORK 구성과 프로젝트 숨김
+
+- 홈 SELECTED WORK를 ARTIST & PERFORMANCE 4개(STAYC, SIGNAL, HEARTCREAM, TWO SIDES)로 구성. 인물이 멀리 있거나 옆모습인 고화질 스틸을 대표 이미지로 사용하고, 홈 분야 필터는 제거.
+  - 네 프로젝트의 기존 PDF 추출 이미지는 `projects.json`의 `archived_images`에 보관.
+  - 홈 목록은 `projects.json`의 `"featured": 순서`로 정하며, `build-pages.py`가 `dist/app.js`를 갱신.
+- 대표 이미지가 없거나 가로 1280px 미만인 49개 프로젝트를 숨김(`"hidden": true`). 숨긴 프로젝트는 WORK 목록, 상세 페이지, NEXT PROJECT 연결에서 빠지고, 프로젝트가 없는 분야 필터(BRAND FILM)도 자동으로 사라짐.
+
+### 숨긴 프로젝트 다시 보이기
+
+1. `projects.json`에서 해당 프로젝트의 `"hidden": true` 줄을 지움 (고화질 이미지로 교체했다면 `image`도 함께 수정).
+2. `python3 build-pages.py` 실행 → WORK 목록과 상세 페이지가 다시 생성됨.
+3. `main` 반영 후 `gh-pages` 갱신.
