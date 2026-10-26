@@ -81,3 +81,11 @@
 ```
 git subtree push --prefix hollin-renewal/dist origin gh-pages
 ```
+
+## 2026-10-26 고화질 이미지 교체
+
+- 사용자 업로드 원본 122장(`image-uploads/`)을 파일명(프로젝트명)으로 프로젝트와 매칭해 교체.
+  - 기존 이미지 93장 교체, 이미지가 없던 LIVE 프로젝트 27개에 대표 이미지 추가(`project-<slug>.jpg`), 스탠스·창퀴즈온더블럭은 두 번째 장을 갤러리에 추가.
+  - 2560px 이하 JPEG(품질 85)로 변환. 위아래 단색 여백(레터박스·흰 띠)은 잘라내고, 잘라낸 결과가 2.4:1보다 납작하면 사이트 배경색(#0b0b0b)으로 16:9에 맞춤.
+- `image-replacement-list.xlsx` 해상도·상태 갱신. 남은 교체 대상 59장(주로 BRAND & PRODUCT, ARTIST & PERFORMANCE와 대표 프로젝트 갤러리).
+- 178개 HTML 로컬 참조 검사 통과. WORK(LIVE·EVENT 필터), 상세, 홈, 390px 모바일 확인. 콘솔·요청 오류 없음.
