@@ -4,6 +4,9 @@ import json, re, html
 root = Path(__file__).parent
 dist = root / 'dist'
 projects = json.loads((root / 'projects.json').read_text(encoding='utf-8'))
+# "hidden": true keeps a project out of the site until it gets a high-resolution image.
+visible = [p for p in projects if not p.get('hidden')]
+categories = [('brand','BRAND FILM'),('corporate','CORPORATE'),('event','EVENT FILM'),('media','ARTIST & PERFORMANCE'),('live','LIVE & SYSTEM')]
 
 def nav(active):
     return ''.join(f'<a href="{name.lower()}.html"'+(' aria-current="page"' if active == name else '')+f'>{name}</a>' for name in ['WORK','ABOUT','EXPERTISE','CONTACT'])
@@ -24,7 +27,7 @@ cta = '<section class="next-section"><p class="eyebrow">LET’S CREATE BEYOND</p
 heritage_data=json.loads((root/'heritage.json').read_text(encoding='utf-8'))
 heritage='<section class="heritage section"><p class="eyebrow">FILM DOPAMINE / 2014–2024</p><h2>필름도파민 레이블 제작 이력</h2><p>브랜드 영상부터 엔터테인먼트, 기업 홍보와 포토까지.</p><div class="heritage-grid">'+''.join('<article><h3>'+html.escape(k)+'</h3><ul>'+''.join('<li>'+html.escape(x)+'</li>' for x in v)+'</ul></article>' for k,v in heritage_data.items())+'</div></section>'
 
-work = f'''<section class="page-visual work-visual"><img src="assets/stayc-purple.jpg" alt="STAYC VCR의 보랏빛 우주 공간 장면" fetchpriority="high"><div class="visual-copy"><p class="eyebrow">SELECTED PROJECTS</p><h1>OUR WORK<span>.</span></h1><p>브랜드에서 무대까지. 이야기를 완성하는 제작.</p></div></section><section class="gallery-section" aria-label="프로젝트 갤러리"><div class="archive-intro"><p class="eyebrow">PROJECT ARCHIVE</p><h2>다양한 이야기, 하나의 제작 역량.</h2><label for="project-search">프로젝트 검색</label><input type="search" id="project-search" placeholder="브랜드, 프로젝트, 제작 분야 검색" autocomplete="off"></div><div class="gallery-toolbar"><div class="filters" role="group" aria-label="프로젝트 분야"><button data-filter="all" aria-pressed="true">ALL</button><button data-filter="brand" aria-pressed="false">BRAND FILM</button><button data-filter="corporate" aria-pressed="false">CORPORATE</button><button data-filter="event" aria-pressed="false">EVENT FILM</button><button data-filter="media" aria-pressed="false">ARTIST & PERFORMANCE</button><button data-filter="live" aria-pressed="false">LIVE & SYSTEM</button></div><p id="result-count" role="status">{len(projects)} PROJECTS</p></div><div class="work-wall">''' + ''.join(tile(p) for p in projects) + '</div><p id="empty-results" hidden>검색 결과가 없습니다. 다른 검색어나 분야를 선택해 주세요.</p><button id="load-more" class="outline-button" hidden>MORE PROJECTS</button></section>'+heritage+cta
+work = f'''<section class="page-visual work-visual"><img src="assets/stayc-purple.jpg" alt="STAYC VCR의 보랏빛 우주 공간 장면" fetchpriority="high"><div class="visual-copy"><p class="eyebrow">SELECTED PROJECTS</p><h1>OUR WORK<span>.</span></h1><p>브랜드에서 무대까지. 이야기를 완성하는 제작.</p></div></section><section class="gallery-section" aria-label="프로젝트 갤러리"><div class="archive-intro"><p class="eyebrow">PROJECT ARCHIVE</p><h2>다양한 이야기, 하나의 제작 역량.</h2><label for="project-search">프로젝트 검색</label><input type="search" id="project-search" placeholder="브랜드, 프로젝트, 제작 분야 검색" autocomplete="off"></div><div class="gallery-toolbar"><div class="filters" role="group" aria-label="프로젝트 분야"><button data-filter="all" aria-pressed="true">ALL</button>{''.join(f'<button data-filter="{key}" aria-pressed="false">{name}</button>' for key,name in categories if any(p['category']==key for p in visible))}</div><p id="result-count" role="status">{len(visible)} PROJECTS</p></div><div class="work-wall">''' + ''.join(tile(p) for p in visible) + '</div><p id="empty-results" hidden>검색 결과가 없습니다. 다른 검색어나 분야를 선택해 주세요.</p><button id="load-more" class="outline-button" hidden>MORE PROJECTS</button></section>'+heritage+cta
 write('work.html','WORK','WORK',work,'브랜드필름과 기업 홍보영상, 아티스트 콘텐츠와 라이브 프로덕션. 스튜디오홀린의 대표 프로젝트를 만나보세요.')
 
 about = '''<section class="page-heading"><p class="eyebrow">ABOUT STUDIO HOLLIN</p><h1>WHO WE ARE<span>.</span></h1></section><section class="about-cinema"><img src="assets/signal-harmony.jpg" alt="SIGNAL의 메트로놈과 초록빛 파형 장면" fetchpriority="high"></section><section class="about-manifesto"><p class="eyebrow">ALL-IN-ONE PRODUCTION</p><h2>이야기를 발견하고,<br>경험으로 완성하다.</h2><p>브랜드필름부터 기업 홍보, 공연과 라이브까지.<br>기획·촬영·후반 제작·현장 운영을 연결합니다.</p></section><section class="editorial section"><p class="eyebrow">OUR VISION</p><div class="editorial-columns"><h2>기획부터 완성까지,<br>올인원 프로덕션.</h2><div><p class="lead">보이지 않는 세계관을<br>하나의 완전한 경험으로.</p><p>좋은 콘텐츠는 목적을 이해하는 기획과 치밀한 제작으로 완성됩니다. 홀린은 고객의 구상을 함께 나누고, 기획부터 제작과 연출까지 일관된 시선으로 연결합니다.</p><p>브랜드와 제품의 매력, 기업과 기관의 메시지, 아티스트와 공연의 이야기를 각 프로젝트에 맞는 영상과 현장 경험으로 만듭니다.</p></div></div></section><section class="principles section"><p class="eyebrow">HOW WE THINK</p><div class="principle-grid"><article><span>01 / STORY</span><h3>세계관을 읽다.</h3><p>브랜드와 기업, 아티스트가 전하고 싶은 이야기를 이해하고 목적에 맞는 콘셉트와 장면을 기획합니다.</p></article><article><span>02 / IMMERSION</span><h3>경계를 지우다.</h3><p>영상과 공간, 빛과 소리가 하나의 흐름으로 이어지는 몰입을 설계합니다.</p></article><article><span>03 / DIRECTION</span><h3>끝까지 연결하다.</h3><p>콘셉트에서 제작과 현장 연출까지. 처음의 구상이 관객에게 전해지는 순간을 함께합니다.</p></article></div></section><section class="philosophy section"><p class="eyebrow">OUR PHILOSOPHY</p><h2>CREATE<br><span>BEYOND.</span></h2><div><p>보이는 것 너머를 기획하고,<br>기대 너머를 완성한다.</p><a class="outline-button" href="expertise.html">OUR EXPERTISE</a></div></section>'''
@@ -47,8 +50,10 @@ write('expertise.html','EXPERTISE','EXPERTISE',expertise,'기획, 미디어 제�
 contact = '''<section class="page-heading contact-heading"><p class="eyebrow">LET’S TALK</p><h1>CONTACT<span>.</span></h1><div class="heading-summary"><h2>다음 장면의 시작,<br>홀린과 함께.</h2><p>만들고 싶은 콘텐츠와 프로젝트,<br>그 첫 구상부터 들려주세요.</p></div></section><section class="contact-panel"><div><p class="eyebrow">PROJECT INQUIRY</p><a class="inquiry-mail" href="mailto:info@studiohollin.com">info@studiohollin.com</a><p>프로젝트의 성격, 일정, 제작 범위를 알려주시면<br>더 구체적인 이야기를 나눌 수 있습니다.</p><a class="outline-button" href="mailto:info@studiohollin.com?subject=STUDIO%20HOLLIN%20프로젝트%20문의">이메일로 프로젝트 문의</a></div><div class="contact-details"><div><p class="eyebrow">CALL US</p><a href="tel:+82315702726">031-570-2726</a></div><div><p class="eyebrow">COMPANY PROFILE</p><a href="assets/hollin-company-profile-2026.pdf" download>2026 회사소개서 다운로드 <span>PDF</span></a></div></div></section><section class="studio-location"><img src="assets/two-sides-call.jpg" alt="TWO SIDES의 전화가 걸려오는 장면"><div><p class="eyebrow">STUDIO HOLLIN</p><h2>브랜드에서 현장까지,<br>함께 만드는 경험.</h2><address>경기도 남양주시 순화궁로 249<br>별내역 파라곤스퀘어 M동 713호</address></div></section>'''
 write('contact.html','CONTACT','CONTACT',contact,'스튜디오홀린 프로젝트 문의. info@studiohollin.com · 031-570-2726.')
 
-for i,p in enumerate(projects):
-    nextp = projects[(i+1)%len(projects)]
+for old in dist.glob('project-*.html'):
+    old.unlink()
+for i,p in enumerate(visible):
+    nextp = visible[(i+1)%len(visible)]
     content = f'''<section class="project-heading"><a class="back-link" href="work.html">ALL PROJECTS</a><p class="eyebrow">{p['label']}</p><h1>{p['title']}</h1><p class="project-korean">{p['ko']}</p></section><figure class="project-cover"><img src="assets/{p['image']}" alt="{p['ko']} 대표 장면" fetchpriority="high"></figure><section class="project-story section"><dl><div><dt>CATEGORY</dt><dd>{p['label']}</dd></div>'''
     if not p['image']:
         content = re.sub(r'<figure class="project-cover">.*?</figure>', '', content)
@@ -69,4 +74,12 @@ def menu_links(match):
     return s
 home=re.sub(r'<nav\b.*?</nav>',menu_links,home,flags=re.S)
 index_path.write_text(home,encoding='utf-8')
-print(f'Created 4 menu pages and {len(projects)} project detail pages.')
+
+# Home SELECTED WORK: visible projects with "featured": n, in that order.
+featured = sorted((p for p in visible if p.get('featured')), key=lambda p: p['featured'])
+keys = ['slug','title','ko','year','category','label','image','gallery','description','scope']
+app_path = dist / 'app.js'
+app = app_path.read_text(encoding='utf-8')
+app = re.sub(r'^const projects=\[.*?\];$', lambda m: 'const projects='+json.dumps([{k:p[k] for k in keys} for p in featured], ensure_ascii=False)+';', app, count=1, flags=re.M)
+app_path.write_text(app, encoding='utf-8')
+print(f'Created 4 menu pages, {len(visible)} project detail pages ({len(projects)-len(visible)} hidden), {len(featured)} home projects.')
