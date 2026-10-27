@@ -8,14 +8,27 @@ projects = json.loads((root / 'projects.json').read_text(encoding='utf-8'))
 visible = [p for p in projects if not p.get('hidden')]
 categories = [('brand','BRAND FILM'),('corporate','CORPORATE'),('event','EVENT FILM'),('media','ARTIST & PERFORMANCE'),('live','LIVE & SYSTEM')]
 
+# Address the site will live at; used for share previews, canonical links and the sitemap.
+SITE_URL = 'https://studiohollin.com'
+# Set to 'studiohollin.com' on the day DNS points at GitHub Pages; the build then writes dist/CNAME.
+CUSTOM_DOMAIN = None
+
+def social(title, description, path, image=None):
+    url = SITE_URL + '/' + ('' if path == 'index.html' else path)
+    img = SITE_URL + '/assets/' + (image or 'share.jpg')
+    t, d = html.escape(title, quote=True), html.escape(description, quote=True)
+    return (f'<link rel="canonical" href="{url}"><meta property="og:type" content="website"><meta property="og:site_name" content="STUDIO HOLLIN">'
+            f'<meta property="og:title" content="{t}"><meta property="og:description" content="{d}"><meta property="og:url" content="{url}">'
+            f'<meta property="og:image" content="{img}"><meta name="twitter:card" content="summary_large_image">')
+
 def nav(active):
     return ''.join(f'<a href="{name.lower()}.html"'+(' aria-current="page"' if active == name else '')+f'>{name}</a>' for name in ['WORK','ABOUT','EXPERTISE','CONTACT'])
 
-def page(title, active, content, description):
-    return f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{title} — STUDIO HOLLIN</title><meta name="description" content="{description}"><link rel="icon" type="image/png" href="assets/studio-hollin-logo.png"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="inner.css?v=5"></head><body class="inner-page" id="top"><a class="skip" href="#main">콘텐츠로 이동</a><header><a class="brand" href="index.html" aria-label="스튜디오홀린 홈"><img src="assets/studio-hollin-logo.png" alt="STUDIO HOLLIN" width="454" height="355"></a><nav aria-label="주 메뉴">{nav(active)}</nav><button class="menu-toggle" aria-expanded="false" aria-controls="mobile-nav">MENU</button></header><nav id="mobile-nav" class="mobile-nav" aria-label="모바일 메뉴" hidden><a href="index.html">HOME</a>{nav(active)}</nav><main id="main">{content}</main><footer class="inner-footer"><div class="footer-main"><a class="brand" href="index.html"><img src="assets/studio-hollin-logo.png" alt="STUDIO HOLLIN" width="454" height="355"></a><nav aria-label="하단 메뉴"><a href="index.html">HOME</a>{nav(active)}</nav><a href="mailto:info@studiohollin.com">info@studiohollin.com</a></div><div class="footer-bottom"><p>© 2026 STUDIO HOLLIN. ALL RIGHTS RESERVED.</p><a href="#top">BACK TO TOP</a></div></footer><script src="inner.js?v=4"></script></body></html>'''
+def page(title, active, content, description, path=None, image=None):
+    return f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{title} — STUDIO HOLLIN</title><meta name="description" content="{description}">{social(f"{title} — STUDIO HOLLIN", description, path, image) if path is not None else ""}<link rel="icon" type="image/png" href="assets/studio-hollin-logo.png"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="inner.css?v=5"></head><body class="inner-page" id="top"><a class="skip" href="#main">콘텐츠로 이동</a><header><a class="brand" href="index.html" aria-label="스튜디오홀린 홈"><img src="assets/studio-hollin-logo.png" alt="STUDIO HOLLIN" width="454" height="355"></a><nav aria-label="주 메뉴">{nav(active)}</nav><button class="menu-toggle" aria-expanded="false" aria-controls="mobile-nav">MENU</button></header><nav id="mobile-nav" class="mobile-nav" aria-label="모바일 메뉴" hidden><a href="index.html">HOME</a>{nav(active)}</nav><main id="main">{content}</main><footer class="inner-footer"><div class="footer-main"><a class="brand" href="index.html"><img src="assets/studio-hollin-logo.png" alt="STUDIO HOLLIN" width="454" height="355"></a><nav aria-label="하단 메뉴"><a href="index.html">HOME</a>{nav(active)}</nav><a href="mailto:info@studiohollin.com">info@studiohollin.com</a></div><div class="footer-bottom"><p>© 2026 STUDIO HOLLIN. ALL RIGHTS RESERVED.</p><a href="#top">BACK TO TOP</a></div></footer><script src="inner.js?v=4"></script></body></html>'''
 
-def write(name, title, active, content, description):
-    (dist / name).write_text(page(title,active,content,description), encoding='utf-8')
+def write(name, title, active, content, description, image=None):
+    (dist / name).write_text(page(title,active,content,description,name,image), encoding='utf-8')
 
 def tile(p):
     title=html.escape(p['title']); ko=html.escape(p['ko'])
@@ -62,7 +75,7 @@ for i,p in enumerate(visible):
     if p['gallery']:
         content += '<section class="project-gallery" aria-label="프로젝트 제작 이미지">'+''.join(f'<figure><img src="assets/{img}" alt="{p["ko"]} 제작 이미지 {j+1}" loading="lazy"></figure>' for j,img in enumerate(p['gallery']))+'</section>'
     content += f'<section class="project-pagination"><a href="work.html">ALL PROJECTS</a><a href="project-{nextp["slug"]}.html"><span>NEXT PROJECT</span><strong>{nextp["title"]}</strong></a></section>'
-    write(f'project-{p["slug"]}.html',p['title'],'WORK',content,p['description'])
+    write(f'project-{p["slug"]}.html',p['title'],'WORK',content,p['description'],p['image'])
 
 # Preserve the entire home composition; change only navigation destinations.
 index_path = dist / 'index.html'
@@ -73,6 +86,9 @@ def menu_links(match):
         s=s.replace(f'href="#{name}"',f'href="{name}.html"')
     return s
 home=re.sub(r'<nav\b.*?</nav>',menu_links,home,flags=re.S)
+home=re.sub(r'<link rel="canonical".*?<meta name="twitter:card"[^>]*>','',home,flags=re.S)
+desc=re.search(r'<meta name="description" content="([^"]*)">',home)
+home=home.replace(desc.group(0),desc.group(0)+social('STUDIO HOLLIN — CREATE BEYOND',html.unescape(desc.group(1)),'index.html'),1)
 index_path.write_text(home,encoding='utf-8')
 
 # Home SELECTED WORK: visible projects with "featured": n, in that order.
@@ -82,4 +98,18 @@ app_path = dist / 'app.js'
 app = app_path.read_text(encoding='utf-8')
 app = re.sub(r'^const projects=\[.*?\];$', lambda m: 'const projects='+json.dumps([{k:p[k] for k in keys} for p in featured], ensure_ascii=False)+';', app, count=1, flags=re.M)
 app_path.write_text(app, encoding='utf-8')
+# Not-found page: GitHub Pages serves it for any missing path, so set a base for its relative links.
+notfound = page('PAGE NOT FOUND','',"""<section class="page-heading"><p class="eyebrow">404 / PAGE NOT FOUND</p><h1>LOST IN<br>THE SCENE<span>.</span></h1><div class="heading-summary"><h2>찾으시는 페이지가 없습니다.</h2><p>주소가 바뀌었거나 더 이상 제공되지 않는 페이지입니다.</p></div></section><section class="next-section"><p class="eyebrow">STUDIO HOLLIN</p><h2>홈이나 프로젝트에서 다시 시작해 보세요.</h2><div><a class="outline-button" href="index.html">HOME</a> <a class="outline-button" href="work.html">ALL PROJECTS</a></div></section>""",'요청하신 페이지를 찾을 수 없습니다.')
+base = """<script>document.write('<base href="'+(location.hostname.endsWith('github.io')?'/'+location.pathname.split('/')[1]+'/':'/')+'">')</script>"""
+(dist / '404.html').write_text(notfound.replace('<meta charset="utf-8">','<meta charset="utf-8">'+base+'<meta name="robots" content="noindex">',1), encoding='utf-8')
+
+pages = ['index.html','work.html','about.html','expertise.html','contact.html'] + [f'project-{p["slug"]}.html' for p in visible]
+(dist / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+''.join(f'<url><loc>{SITE_URL}/{"" if n=="index.html" else n}</loc></url>\n' for n in pages)+'</urlset>\n', encoding='utf-8')
+(dist / 'robots.txt').write_text(f'User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n', encoding='utf-8')
+(dist / '.nojekyll').write_text('', encoding='utf-8')
+if CUSTOM_DOMAIN:
+    (dist / 'CNAME').write_text(CUSTOM_DOMAIN + '\n', encoding='utf-8')
+elif (dist / 'CNAME').exists():
+    (dist / 'CNAME').unlink()
+
 print(f'Created 4 menu pages, {len(visible)} project detail pages ({len(projects)-len(visible)} hidden), {len(featured)} home projects.')

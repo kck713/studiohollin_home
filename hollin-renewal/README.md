@@ -103,3 +103,20 @@ git subtree push --prefix hollin-renewal/dist origin gh-pages
 1. `projects.json`에서 해당 프로젝트의 `"hidden": true` 줄을 지움 (고화질 이미지로 교체했다면 `image`도 함께 수정).
 2. `python3 build-pages.py` 실행 → WORK 목록과 상세 페이지가 다시 생성됨.
 3. `main` 반영 후 `gh-pages` 갱신.
+
+## 2026-10-27 도메인 연결 준비
+
+- 모든 페이지에 공유 미리보기(Open Graph)·canonical 태그 추가. 기준 주소는 `build-pages.py`의 `SITE_URL`(https://studiohollin.com). 공유 이미지는 `assets/share.jpg`(1200×630), 프로젝트 상세는 각 대표 이미지.
+- `404.html`: 없는 주소(숨긴 프로젝트, 옛 사이트 주소 포함)에 사이트 디자인의 안내 페이지 표시. github.io 하위 경로와 실제 도메인 모두에서 링크가 동작하도록 기준 경로를 자동 설정.
+- `sitemap.xml`(보이는 페이지 129개), `robots.txt`, `.nojekyll`을 빌드 시 생성.
+
+### 도메인 연결 절차
+
+1. 도메인 업체 DNS 화면을 캡처해 백업. **MX·TXT(메일) 레코드는 변경하지 않음.** 하루 전 기존 레코드 TTL을 낮춤.
+2. DNS 변경
+   - `studiohollin.com` A: `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+   - `studiohollin.com` AAAA(선택): `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`
+   - `www` CNAME: `kck713.github.io`
+3. `build-pages.py`의 `CUSTOM_DOMAIN = 'studiohollin.com'`으로 바꾸고 빌드 → `dist/CNAME` 생성 → `main` 반영 후 `gh-pages` 갱신. (`CNAME`은 `dist`에 있어야 다음 배포에서도 유지됨)
+4. 저장소 Settings → Pages에서 Custom domain 확인, 인증서 발급 후 **Enforce HTTPS** 켜기.
+5. Google Search Console·네이버 서치어드바이저에 사이트 등록, `https://studiohollin.com/sitemap.xml` 제출.
