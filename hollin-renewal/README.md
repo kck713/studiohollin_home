@@ -127,3 +127,9 @@ git subtree push --prefix hollin-renewal/dist origin gh-pages
 - `main`에 병합하면 Netlify가 자동 배포하고, PR마다 미리보기 주소(Deploy Preview)가 생김. Netlify로 도메인을 연결한 뒤에는 `gh-pages` 갱신이 필요 없음.
 - 404 페이지는 Netlify가 `404.html`을 자동으로 사용. 옛 주소 연결은 `netlify.toml`의 `[[redirects]]`에 추가.
 - Netlify로 도메인을 연결할 때는 위 GitHub Pages DNS 값 대신 Netlify 도메인 설정 화면이 안내하는 값을 사용하고, `CUSTOM_DOMAIN`(GitHub Pages용 CNAME)은 설정하지 않음. 메일용 MX·TXT 레코드는 그대로 둠.
+
+## 2026-10-31 WORK 썸네일 최적화
+
+- WORK 목록 타일이 원본 대신 `assets/thumbs/`의 작은 사본(640px·1200px, 품질 80)을 `srcset`으로 불러옴. 브라우저가 화면 크기·해상도에 맞는 쪽을 선택.
+- 썸네일은 `build-pages.py` 실행 시 자동 생성(없거나 원본이 더 최신이면 다시 생성). 생성에 Pillow 필요.
+- WORK 첫 화면 전송량: 약 5.3MB → PC 1.1MB, 레티나·모바일 2.2MB. 상세 페이지와 홈은 원본 유지.

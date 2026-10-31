@@ -30,9 +30,31 @@ def page(title, active, content, description, path=None, image=None):
 def write(name, title, active, content, description, image=None):
     (dist / name).write_text(page(title,active,content,description,name,image), encoding='utf-8')
 
+THUMB_WIDTHS = (640, 1200)
+
+def thumbs(image):
+    # Grid tiles show at most ~590 CSS px wide, so they load small copies instead of the full still.
+    from PIL import Image
+    src = dist / 'assets' / image
+    out = {}
+    for w in THUMB_WIDTHS:
+        name = f'thumbs/{Path(image).stem}-{w}.jpg'
+        dst = dist / 'assets' / name
+        if not dst.exists() or dst.stat().st_mtime < src.stat().st_mtime:
+            dst.parent.mkdir(exist_ok=True)
+            im = Image.open(src).convert('RGB')
+            if im.width > w:
+                im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
+            im.save(dst, 'JPEG', quality=80, optimize=True, progressive=True)
+        out[w] = name
+    return out
+
 def tile(p):
     title=html.escape(p['title']); ko=html.escape(p['ko'])
-    visual=f'<img src="assets/{p["image"]}" alt="{ko}" loading="lazy" width="800" height="500">' if p['image'] else '<div class="archive-art" aria-hidden="true"><span>HOLLIN</span><span>LIVE<br>PRODUCTION</span></div>'
+    if p['image']:
+        t = thumbs(p['image'])
+        srcset = ', '.join(f'assets/{t[w]} {w}w' for w in THUMB_WIDTHS)
+    visual=f'<img src="assets/{t[THUMB_WIDTHS[0]]}" srcset="{srcset}" sizes="(max-width: 760px) 92vw, 31vw" alt="{ko}" loading="lazy" width="800" height="500">' if p['image'] else '<div class="archive-art" aria-hidden="true"><span>HOLLIN</span><span>LIVE<br>PRODUCTION</span></div>'
     return f'<a class="work-tile" data-category="{p["category"]}" data-search="{html.escape(p["title"]+" "+p["ko"]+" "+p["scope"],quote=True)}" href="project-{p["slug"]}.html">{visual}<div class="tile-copy"><p>{p["label"]} {p["year"]}</p><h2>{title}</h2><span>VIEW PROJECT</span></div></a>'
 
 cta = '<section class="next-section"><p class="eyebrow">LET’S CREATE BEYOND</p><h2>다음 장면을 함께 만듭니다.</h2><a class="outline-button" href="contact.html">GET IN TOUCH</a></section>'
