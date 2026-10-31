@@ -1,0 +1,24 @@
+# Netlify deploys the pre-built static site; pages are generated locally with
+# hollin-renewal/build-pages.py and committed, so there is no build step.
+[build]
+  publish = "hollin-renewal/dist"
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Image file names are reused when a still is replaced, so cache for a day rather than forever.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# Old studiohollin.com addresses go here once the list is known, e.g.
+# [[redirects]]
+#   from = "/portfolio/*"
+#   to = "/work.html"
+#   status = 301

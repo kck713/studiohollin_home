@@ -120,3 +120,10 @@ git subtree push --prefix hollin-renewal/dist origin gh-pages
 3. `build-pages.py`의 `CUSTOM_DOMAIN = 'studiohollin.com'`으로 바꾸고 빌드 → `dist/CNAME` 생성 → `main` 반영 후 `gh-pages` 갱신. (`CNAME`은 `dist`에 있어야 다음 배포에서도 유지됨)
 4. 저장소 Settings → Pages에서 Custom domain 확인, 인증서 발급 후 **Enforce HTTPS** 켜기.
 5. Google Search Console·네이버 서치어드바이저에 사이트 등록, `https://studiohollin.com/sitemap.xml` 제출.
+
+## 2026-10-31 Netlify 배포 설정
+
+- 저장소 루트의 `netlify.toml`: 배포 폴더 `hollin-renewal/dist`, 빌드 명령 없음(생성된 HTML을 커밋하는 방식). 보안 헤더와 이미지 1일 캐시 설정.
+- `main`에 병합하면 Netlify가 자동 배포하고, PR마다 미리보기 주소(Deploy Preview)가 생김. Netlify로 도메인을 연결한 뒤에는 `gh-pages` 갱신이 필요 없음.
+- 404 페이지는 Netlify가 `404.html`을 자동으로 사용. 옛 주소 연결은 `netlify.toml`의 `[[redirects]]`에 추가.
+- Netlify로 도메인을 연결할 때는 위 GitHub Pages DNS 값 대신 Netlify 도메인 설정 화면이 안내하는 값을 사용하고, `CUSTOM_DOMAIN`(GitHub Pages용 CNAME)은 설정하지 않음. 메일용 MX·TXT 레코드는 그대로 둠.
