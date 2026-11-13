@@ -10,6 +10,23 @@ categories = [('brand','BRAND FILM'),('corporate','CORPORATE'),('event','EVENT F
 
 # Address the site will live at; used for share previews, canonical links and the sitemap.
 SITE_URL = 'https://studiohollin.com'
+SITE_NAME = '스튜디오홀린 STUDIO HOLLIN'
+ICONS = '<link rel="icon" href="favicon.ico" sizes="48x48"><link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png"><link rel="apple-touch-icon" href="assets/apple-touch-icon.png">'
+# Company facts for search engines; sameAs lists the official channels Naver shows as 연관 채널.
+ORGANIZATION = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    'name': '스튜디오홀린',
+    'alternateName': ['STUDIO HOLLIN', '홀린', '주식회사 홀린'],
+    'legalName': '주식회사 홀린',
+    'url': SITE_URL + '/',
+    'logo': SITE_URL + '/assets/icon-512.png',
+    'email': 'info@studiohollin.com',
+    'telephone': '+82-31-570-2726',
+    'address': {'@type': 'PostalAddress', 'streetAddress': '순화궁로 249 별내역 파라곤스퀘어 M동 713호', 'addressLocality': '남양주시', 'addressRegion': '경기도', 'addressCountry': 'KR'},
+    'sameAs': ['https://www.instagram.com/studio_hollin/', 'https://www.youtube.com/@studiohollin', 'https://blog.naver.com/studiohollin'],
+}
+WEBSITE = {'@context': 'https://schema.org', '@type': 'WebSite', 'name': '스튜디오홀린', 'alternateName': 'STUDIO HOLLIN', 'url': SITE_URL + '/'}
 # Set to 'studiohollin.com' on the day DNS points at GitHub Pages; the build then writes dist/CNAME.
 CUSTOM_DOMAIN = None
 
@@ -17,7 +34,7 @@ def social(title, description, path, image=None):
     url = SITE_URL + '/' + ('' if path == 'index.html' else path)
     img = SITE_URL + '/assets/' + (image or 'share.jpg')
     t, d = html.escape(title, quote=True), html.escape(description, quote=True)
-    return (f'<link rel="canonical" href="{url}"><meta property="og:type" content="website"><meta property="og:site_name" content="STUDIO HOLLIN">'
+    return (f'<link rel="canonical" href="{url}"><meta property="og:type" content="website"><meta property="og:site_name" content="{html.escape(SITE_NAME, quote=True)}">'
             f'<meta property="og:title" content="{t}"><meta property="og:description" content="{d}"><meta property="og:url" content="{url}">'
             f'<meta property="og:image" content="{img}"><meta name="twitter:card" content="summary_large_image">')
 
@@ -25,7 +42,7 @@ def nav(active):
     return ''.join(f'<a href="{name.lower()}.html"'+(' aria-current="page"' if active == name else '')+f'>{name}</a>' for name in ['WORK','ABOUT','EXPERTISE','CONTACT'])
 
 def page(title, active, content, description, path=None, image=None):
-    return f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{title} — STUDIO HOLLIN</title><meta name="description" content="{description}">{social(f"{title} — STUDIO HOLLIN", description, path, image) if path is not None else ""}<link rel="icon" type="image/png" href="assets/studio-hollin-logo.png"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="inner.css?v=5"></head><body class="inner-page" id="top"><a class="skip" href="#main">콘텐츠로 이동</a><header><a class="brand" href="index.html" aria-label="스튜디오홀린 홈"><img src="assets/studio-hollin-logo.png" alt="STUDIO HOLLIN" width="454" height="355"></a><nav aria-label="주 메뉴">{nav(active)}</nav><button class="menu-toggle" aria-expanded="false" aria-controls="mobile-nav">MENU</button></header><nav id="mobile-nav" class="mobile-nav" aria-label="모바일 메뉴" hidden><a href="index.html">HOME</a>{nav(active)}</nav><main id="main">{content}</main><footer class="inner-footer"><div class="footer-main"><a class="brand" href="index.html"><img src="assets/studio-hollin-logo.png" alt="STUDIO HOLLIN" width="454" height="355"></a><nav aria-label="하단 메뉴"><a href="index.html">HOME</a>{nav(active)}</nav><a href="mailto:info@studiohollin.com">info@studiohollin.com</a></div><div class="footer-bottom"><p>© 2026 STUDIO HOLLIN. ALL RIGHTS RESERVED.</p><a href="#top">BACK TO TOP</a></div></footer><script src="inner.js?v=4"></script></body></html>'''
+    return f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{title} — {SITE_NAME}</title><meta name="description" content="{description}">{social(f"{title} — {SITE_NAME}", description, path, image) if path is not None else ""}{ICONS}<link rel="stylesheet" href="style.css"><link rel="stylesheet" href="inner.css?v=5"></head><body class="inner-page" id="top"><a class="skip" href="#main">콘텐츠로 이동</a><header><a class="brand" href="index.html" aria-label="스튜디오홀린 홈"><img src="assets/studio-hollin-logo.png" alt="STUDIO HOLLIN" width="454" height="355"></a><nav aria-label="주 메뉴">{nav(active)}</nav><button class="menu-toggle" aria-expanded="false" aria-controls="mobile-nav">MENU</button></header><nav id="mobile-nav" class="mobile-nav" aria-label="모바일 메뉴" hidden><a href="index.html">HOME</a>{nav(active)}</nav><main id="main">{content}</main><footer class="inner-footer"><div class="footer-main"><a class="brand" href="index.html"><img src="assets/studio-hollin-logo.png" alt="STUDIO HOLLIN" width="454" height="355"></a><nav aria-label="하단 메뉴"><a href="index.html">HOME</a>{nav(active)}</nav><a href="mailto:info@studiohollin.com">info@studiohollin.com</a></div><div class="footer-bottom"><p>© 2026 STUDIO HOLLIN. ALL RIGHTS RESERVED.</p><a href="#top">BACK TO TOP</a></div></footer><script src="inner.js?v=4"></script></body></html>'''
 
 def write(name, title, active, content, description, image=None):
     (dist / name).write_text(page(title,active,content,description,name,image), encoding='utf-8')
@@ -109,8 +126,12 @@ def menu_links(match):
     return s
 home=re.sub(r'<nav\b.*?</nav>',menu_links,home,flags=re.S)
 home=re.sub(r'<link rel="canonical".*?<meta name="twitter:card"[^>]*>','',home,flags=re.S)
+home=re.sub(r'<link rel="icon".*?<link rel="apple-touch-icon"[^>]*>|<link rel="icon"[^>]*>',lambda m: ICONS,home,count=1,flags=re.S)
+home=re.sub(r'<script type="application/ld\+json">.*?</script>','',home,flags=re.S)
+home=home.replace('</head>',''.join('<script type="application/ld+json">'+json.dumps(d,ensure_ascii=False)+'</script>' for d in (WEBSITE, ORGANIZATION))+'</head>',1)
 desc=re.search(r'<meta name="description" content="([^"]*)">',home)
-home=home.replace(desc.group(0),desc.group(0)+social('STUDIO HOLLIN — CREATE BEYOND',html.unescape(desc.group(1)),'index.html'),1)
+home_title=html.unescape(re.search(r'<title>([^<]*)</title>',home).group(1))
+home=home.replace(desc.group(0),desc.group(0)+social(home_title,html.unescape(desc.group(1)),'index.html'),1)
 index_path.write_text(home,encoding='utf-8')
 
 # Home SELECTED WORK: visible projects with "featured": n, in that order.

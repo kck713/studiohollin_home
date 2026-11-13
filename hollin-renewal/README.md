@@ -133,3 +133,9 @@ git subtree push --prefix hollin-renewal/dist origin gh-pages
 - WORK 목록 타일이 원본 대신 `assets/thumbs/`의 작은 사본(640px·1200px, 품질 80)을 `srcset`으로 불러옴. 브라우저가 화면 크기·해상도에 맞는 쪽을 선택.
 - 썸네일은 `build-pages.py` 실행 시 자동 생성(없거나 원본이 더 최신이면 다시 생성). 생성에 Pillow 필요.
 - WORK 첫 화면 전송량: 약 5.3MB → PC 1.1MB, 레티나·모바일 2.2MB. 상세 페이지와 홈은 원본 유지.
+
+## 2026-11-13 검색 결과 브랜드 정보
+
+- 홈 제목·설명과 모든 페이지 제목, 공유 미리보기의 사이트 이름에 한글 회사명 추가 (`SITE_NAME = '스튜디오홀린 STUDIO HOLLIN'`).
+- 홈에 구조화 데이터(JSON-LD) `WebSite`·`Organization` 추가: 회사명(스튜디오홀린 / STUDIO HOLLIN / 홀린 / 주식회사 홀린), 로고, 연락처, 주소, 공식 채널(`sameAs`: 인스타그램, 유튜브, 네이버 블로그). 채널을 바꾸면 `build-pages.py`의 `ORGANIZATION`을 수정 후 빌드.
+- 로고의 여우 심볼로 정사각형 아이콘 세트 생성: `favicon.ico`(16·32·48), `assets/favicon-32.png`, `assets/icon-192.png`, `assets/icon-512.png`, `assets/apple-touch-icon.png`.
